@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>javacript-深层克隆</title>
+</head>
+<body>
+<script type="text/javascript">
+	var obj = {
+		name : 'safd',
+		age : 123,
+		card : ['visa','mesasf'],
+		wife : {
+			name : 'ssdsad',
+			son : {
+				name : 'asdsa'
+			}
+		}
+	}
+	var obj1 = {}
+	//首先遍历对象   for(var prop in obj){}
+	//1.判断是不是原始值  ttypeof() ==> object引用值/原始值
+	//2.判断是数组引用值还是对象引用值  instanceof,tostring,constructor
+	//3.建立相应的数组或对象
+	//递归：判断每一位值是原始值还是引用值，循环上述步骤
+	function deepClone(origin,target){
+		var target = target || {},  //容错：target有值就用target，没值就用空对象
+			toStr = object.prototype.toString,
+			arrStr = "[object Array]";  //为了判断引用值，和数组相比较看是对象引用值还是数组引用值
+	}
+	for(var prop in origin){
+		if(hasOwnproperty){
+			if(origin[prop] !== "null" && typeof(origin[prop] == "object")){
+				if(toStr.call(origin[prop]) == arrStr){
+					target[prop] = [];
+				}else{
+					target[prop] = {};
+				}
+				deepClone(origin[prop],target[prop]);
+			}else{
+				target[prop] = origin[prop];
+			}
+		}
+		return target;
+	}
+
+</script>
+</body>
+</html>
