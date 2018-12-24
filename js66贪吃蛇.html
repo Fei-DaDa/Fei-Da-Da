@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{margin: 0;padding: 0;}
+        #bj{width: 800px;height: 600px;position: relative;background: #0ff;margin: 10px auto;}
+        #ks{width: 80px;height: 60px;position: absolute;background: #f0f;left: 10px;top: 100px;line-height: 60px;text-align: center;}
+        #tz{width: 80px;height: 60px;position: absolute;background: #ff0;left: 10px;top: 200px;line-height: 60px;text-align: center;}
+        #fs{width: 80px;height: 60px;position: absolute;background: #0f0;left: 10px;top: 300px;line-height: 60px;text-align: center;}
+        #fsz{width: 80px;height: 60px;position: absolute;background: #0f0;left: 10px;top: 360px;line-height: 60px;text-align: center;}
+    </style>
+</head>
+<body>
+    <div id="bj"></div>
+    <div id="ks">开始</div>
+    <div id="tz">停止</div>
+    <div id="fs">分数</div>
+    <div id="fsz">1</div>
+</body>
+<script>
+
+    var bj=document.getElementById("bj");
+    (function(){
+        var sw=[];//食物数组,记录食物
+        function Food(ff){
+            ff=ff||{};
+            this.x=ff.x||0;
+            this.y=ff.y||0;
+            this.width=ff.width||20;
+            this.height=ff.height||20;
+            this.color=ff.color||"red";
+        };
+        var Sj={
+            hdsj:function(min,max){
+                return Math.floor(Math.random()*(max+1-min)+min);
+            }
+        };
+        Food.prototype.rr=function(bj){
+            this.x=Sj.hdsj(0,bj.offsetWidth/this.width-1)*this.width;
+            this.y=Sj.hdsj(0,bj.offsetHeight/this.height-1)*this.height;
+            remove();
+            var fd=document.createElement("div");
+            bj.appendChild(fd);//创建动态div食物
+            sw.push(fd);
+            fd.style.position="absolute";
+            fd.style.left=this.x+"px";
+            fd.style.top=this.y+"px";
+            fd.style.width=this.width+"px";
+            fd.style.height=this.height+"px";
+            fd.style.backgroundColor=this.color;
+        };
+        function remove(){
+            for(i=sw.length-1;i>=0;i--){
+                sw[i].parentNode.removeChild(sw[i]);//通过sw[i]找到其父元素再进行删除div
+                sw.splice(i,1);//删除数组元素
+            }
+        };
+        window.Food=Food;//把Food构造函数 让外部也可以访问
+    })();
+    
+    (function(){
+        var st=[];
+        function Snake(ss){
+            ss=ss||{};
+            this.width=ss.width||20;
+            this.height=ss.height||20;
+            this.direction=ss.direction||"right";
+            this.body=[
+                {x:3,y:2,color:"#00F"},
+                {x:2,y:2,color:"#FF0"},
+                {x:1,y:2,color:"#FF0"}
+            ]//蛇身体
+        };
+        Snake.prototype.tcs=function(bj){
+            remove();
+            for(i=0,l=this.body.length;i<l;i++){
+                var sdiv=document.createElement("div");
+                bj.appendChild(sdiv);
+                st.push(sdiv);
+                sdiv.style.position="absolute";
+                sdiv.style.width=this.width+"px";
+                sdiv.style.height=this.height+"px";
+                sdiv.style.left=this.width*this.body[i].x+"px";
+                sdiv.style.top=this.height*this.body[i].y+"px";
+                sdiv.style.backgroundColor=this.body[i].color;
+            }
+        };
+        function remove(){
+            for(i=st.length-1;i>=0;i--){
+                st[i].parentNode.removeChild(st[i]);
+                st.splice(i,1);
+            }
+        };
+        Snake.prototype.move=function(food,bj){
+            for(i=this.body.length-1;i>0;i--){
+                this.body[i].x=this.body[i-1].x;//将上一节的位置赋值给当前节的位置
+                this.body[i].y=this.body[i-1].y;
+            };
+            switch(this.direction){
+                case "right":this.body[0].x += 1;break;
+                case "left":this.body[0].x -= 1;break;
+                case "top":this.body[0].y -= 1;break;
+                case "bottom":this.body[0].y += 1;break;
+            };
+            var headX=this.body[0].x*this.width;
+            var headY=this.body[0].y*this.height;
+            if(headX==food.x && headY==food.y){
+                food.rr(bj);
+                var last=this.body[this.body.length-1];
+                // this.body.push({x:last.x,y:last.y,color:last.color})
+                var xst={};
+                function extend(f,z){
+                for(var i in f){
+                        if(z[i]){continue;}//不复制同属性
+                        z[i]=f[i];
+                    }
+                };
+                extend(last,xst);
+                this.body.push(xst);
+                fszz++;
+                fsz.innerHTML=fszz;
+            }
+        }
+        window.Snake=Snake;
+    })();
+    
+    (function(){
+        var that;
+        function Game(bj){
+            this.food=new Food();
+            this.snake=new Snake();
+            this.bj=bj;
+            that=this; 
+        };
+        Game.prototype.start=function(){
+            this.food.rr(this.bj);
+            this.snake.tcs(this.bj);
+            run();
+            key();
+        };
+        function run(){
+            timer=setInterval(function(){
+                that.snake.move(that.food,that.bj);
+                that.snake.tcs(that.bj);
+                var maxx=that.bj.offsetWidth/that.snake.width;
+                var maxy=that.bj.offsetHeight/that.snake.height;
+                var headx=that.snake.body[0].x;
+                var heady=that.snake.body[0].y;
+                if(headx<0||headx>=maxx||heady<0||heady>=maxy){
+                    alert("垃圾");
+                    clearInterval(timer);
+                };
+            },200)
+        };
+        function key(){
+            document.addEventListener("keydown",function(e){
+                switch(e.keyCode){
+                    case 68:this.snake.direction="right";break;
+                    case 65:this.snake.direction="left";break;
+                    case 87:this.snake.direction="top";break;
+                    case 83:this.snake.direction="bottom";break;
+                }
+            }.bind(that),false);
+        }
+        window.Game=Game;
+    })();
+
+    var ks=document.getElementById("ks");
+    var tz=document.getElementById("tz");
+    var fsz=document.getElementById("fsz");
+    game=new Game(bj);
+    var fszz=1;
+    ks.onclick=function(){
+        game.start();
+    };
+    tz.onclick=function(){
+        clearInterval(timer);
+    };
+</script>
+</html>
